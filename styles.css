@@ -1,0 +1,542 @@
+/*-------------------------------------------------
+  Credits to Sebastien Gabriel for the inspiration
+  https://dribbble.com/shots/202751-Audio-Player
+--------------------------------------------------*/
+
+@import url('https://fonts.googleapis.com/css?family=Antic');
+
+body{
+  background: url(http://storage.macx.im/codepen/wood-floors-background.jpg);
+  background-size: cover;
+  font-family: 'Antic', sans-serif;
+}
+
+.player-wrapper{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.player{
+  background: #353535;
+  background: linear-gradient(to bottom,  #353535 0%,#1a1a1a 100%);
+  border-radius: 5px;
+  border: 1px solid #1A1A1A;
+  border-bottom: 0;
+  margin: 0 auto;
+  padding: 10px;
+  position: relative;
+}
+
+.player:before{
+  position: absolute;
+  left: 2px;
+  top: 0;
+  display: inline-block;
+  content: "";
+  height: 1px;
+  border-top: 1px solid #484848;
+  width: 99%;
+}
+
+.player:after{
+  display: inline-block;
+  margin: 30px auto;
+  content: "";
+  height: 10px;
+  width: 100%;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -150px;
+  left: 0;
+  background-color: rgba(0,0,0, .9);
+  filter: blur(5px)
+}
+
+.player__noise{
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: url(http://storage.macx.im/codepen/noisy-texture.png);
+  z-index: -1;
+}
+
+.player__container{
+  background-color: #1A1A1A;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='12' viewBox='0 0 20 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 12c0-.622-.095-1.221-.27-1.785A5.982 5.982 0 0 0 10 12c1.67 0 3.182-.683 4.27-1.785A5.998 5.998 0 0 0 14 12h2a4 4 0 0 1 4-4V6c-1.67 0-3.182.683-4.27 1.785C15.905 7.22 16 6.622 16 6c0-.622-.095-1.221-.27-1.785A5.982 5.982 0 0 0 20 6V4a4 4 0 0 1-4-4h-2c0 .622.095 1.221.27 1.785A5.982 5.982 0 0 0 10 0C8.33 0 6.818.683 5.73 1.785 5.905 1.22 6 .622 6 0H4a4 4 0 0 1-4 4v2c1.67 0 3.182.683 4.27 1.785A5.998 5.998 0 0 1 4 6c0-.622.095-1.221.27-1.785A5.982 5.982 0 0 1 0 6v2a4 4 0 0 1 4 4h2zm-4 0a2 2 0 0 0-2-2v2h2zm16 0a2 2 0 0 1 2-2v2h-2zM0 2a2 2 0 0 0 2-2H0v2zm20 0a2 2 0 0 1-2-2h2v2zm-10 8a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' fill='%2300000' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
+  border-radius: 4px;
+  border-bottom: 1px solid #252525;
+  overflow: hidden;
+}
+
+.song-data{
+  background: #353535;
+  background: linear-gradient(to bottom,  #282828 0%,#171717 100%);
+  box-shadow: 0 2px 3px #000;
+  border-radius: 3px;
+  border: 1px solid #000;
+  border-bottom: 0;
+  position: relative;
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  opacity: 0;
+  top: -150px;
+  padding: 4px;
+  transition: all 3s ease-out;
+}
+
+  .song-data.is-visible{
+    visibility: visible;
+    height: auto;
+    width: auto;
+    opacity: 1;
+    margin: 5px;
+    top: 0;
+  }
+
+.song-data:before{
+  position: absolute;
+  left: 0;
+  top: 1px;
+  right: 0;
+  margin: auto;
+  display: inline-block;
+  content: "";
+  height: 1px;
+  border-top: 1px solid #373737;
+  width: 99.5%;
+}
+
+.song-data-container{
+  display: flex;
+}
+
+.song-cover-wrap{
+  position: relative;
+  border: 5px solid #0D0D0D;
+  border-radius: 2px;
+  width: 100px;
+  height: 100px;
+}
+
+.song-cover{
+  border-radius: 1px;
+  display: block;
+  width: 100px;
+  height: 100px;
+}
+
+.song-cover-fake-border{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1);
+  border-radius: 1px;
+}
+
+.song-meta-wrap{
+  padding: 10px;
+  margin-right: 10px;
+  width: 230px;
+}
+
+.current-song-title{
+  font-family: 'Antic', sans-serif;
+  font-size: 15px;
+  margin: 0;
+  color: #fff;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+}
+
+.current-song-author{
+  font-size: 16px;
+  margin: 4px 0;
+  color: #999;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.current-song-time{
+  font-size: 12px;
+  color: #999;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+
+.song-list{
+  position: relative;
+  list-style-type: none;
+  margin: 0;
+  padding: 10px;
+  font-size: 12px;
+  color: #999;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  transition: all .3s ease-out;
+}
+
+.song-list:before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -5px;
+  width: 0;
+  height: 100%;
+  border-left: 1px solid #0D0D0D;
+  border-right: 1px solid #313131;
+}
+
+.song-list__item{
+  cursor: pointer;
+  transition: color .3s ease-out;
+
+}
+
+  .song-list__item:hover{
+    color: #fff;
+  }
+
+/* Buttons */
+.button-bar{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.button-bar--primary > .btn{
+  animation-duration: .3s;
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
+
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  padding: 0;
+}
+
+.button-bar > .is-shown:nth-child(1),
+.button-bar > .is-shown:nth-child(2),
+.button-bar > .is-shown:nth-child(3){
+  animation-name: fadeInLeft;
+}
+
+.button-bar > .is-shown:nth-child(5),
+.button-bar > .is-shown:nth-child(6),
+.button-bar > .is-shown:nth-child(7){
+  animation-name: fadeInRight;
+}
+
+.button-bar > .is-shown:nth-child(3),
+.button-bar > .is-shown:nth-child(7){
+  animation-delay: .3s;
+}
+
+.button-bar > .is-shown:nth-child(2),
+.button-bar > .is-shown:nth-child(6){
+  animation-delay: 1.2s;
+}
+
+.button-bar > .is-shown:nth-child(1),
+.button-bar > .is-shown:nth-child(5){
+  animation-delay: 2.15s;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    height: auto;
+    width: auto;
+    visibility: visible;
+    transform: none;
+    padding: 8px 29.5px;
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    height: auto;
+    width: auto;
+    visibility: visible;
+    transform: none;
+    padding: 8px 29.5px;
+  }
+}
+
+.button-bar--secondary{
+  position: relative;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  bottom: -100px;
+  transition: all .4s ease-out;
+}
+
+  .button-bar--secondary.is-visible{
+    visibility: visible;
+    width: auto;
+    height: auto;
+    opacity: 1;
+    bottom: 0;
+  }
+
+.btn{
+  position: relative;
+  padding: 8px 29.5px;
+  cursor: pointer;
+  background: linear-gradient(to bottom, #2A2A2A 0%,#1A1A1A 100%);
+  border: 0;
+  border-top: 1px solid #0F0F0F;
+  border-left: 1px solid #0F0F0F;
+  box-shadow: 0 2px 3px #000;
+}
+
+  .btn:before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-top: 1px solid #2F2F2F;
+    border-left: 1px solid #2F2F2F;
+  }
+
+  .btn:after{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(http://storage.macx.im/codepen/noisy-texture.png);
+  }
+
+  .btn:focus{
+    outline: 0;
+  }
+
+.btn .fa{
+  color: #fff;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.button-fake{
+  position: relative;
+  display: inline-block;
+  height: 34px;
+  width: 70px;
+  background-color: #171717;
+}
+
+  .button-fake:before,
+  .button-fake:after{
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 36px;
+    width: 10px;
+  }
+
+  .button-fake:before{
+    left: -6px;
+    border-bottom-left-radius: 50%;
+    border-top-left-radius: 50%;
+    background-color: #171717;
+  }
+  .button-fake:after{
+    right: -5px;
+    border-bottom-right-radius: 50%;
+    border-top-right-radius: 50%;
+    background-color: #171717;
+    z-index: 1;
+  }
+
+.btn--play{
+  position: relative;
+  background-color: #131313;
+  background-image: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  transition: .3s ease-out box-shadow;
+}
+
+.btn--play:before{
+  position: absolute;
+  content: "";
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom: 1px solid #313131;
+  border-radius: 50%;
+  border-top: 0;
+  border-left: 0;
+}
+
+.btn--play:after{
+  content: none;
+}
+
+.btn--play .fa{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-40%,-50%);
+}
+
+.btn--pause{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: -1;
+}
+
+  .btn--pause.is-visible{
+    z-index: 0;
+  }
+
+.play-btn-wrap{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  padding: 10px;
+  background-color: #1C1C1C;
+  border-radius: 50%;
+  border: 4px solid #252525;
+  box-shadow: 0 0 2px 0 #000, inset 0 1px 3px 1px rgba(0, 0, 0, .3);
+
+  transition: .3s ease-out box-shadow;
+  z-index: 2;
+}
+
+.play-btn-wrap:before{
+  position: absolute;
+  content: "";
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom: 1px solid #313131;
+  border-radius: 50%;
+}
+
+.btn--more-controls.is-active .fa,
+.btn--random-song.is-active .fa,
+.btn--repeat-song.is-active .fa{
+  color: #4dafe3;
+  text-shadow: 1px 1px 0 #000;
+}
+
+input[type=range] {
+  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  width: 100%; /* Specific width is required for Firefox. */
+  background: transparent; /* Otherwise white in Chrome */
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  height: 8px;
+  cursor: pointer;
+  background: linear-gradient(to bottom, #76daf9 0%,#4dafe3 100%);
+  border: 1px solid #0C0C0C;
+}
+
+
+input[type=range]::-moz-range-track {
+  height: 8px;
+  cursor: pointer;
+  border: 1px solid #0C0C0C;
+  background-color: #141414;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, .4);
+}
+
+input[type=range]::-moz-range-progress{
+  background: linear-gradient(to bottom, #76daf9 0%,#4dafe3 100%);
+  height: 8px;
+  border-right: 1px solid #0C0C0C;
+}
+
+input[type=range]::-moz-focus-outer {
+  border: 0;
+}
+
+/* Special styling for WebKit/Blink */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 0;
+  height: 7px;
+  width: 2px;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  background: #000;
+  cursor: pointer;
+}
+
+input[type=range]::-moz-range-thumb {
+  border: 0;
+  height: 0;
+  width: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+
+.input-range-wrapper{
+  height: 17px;
+  padding-right: 26.5px;
+  padding-left: 26.5px;
+  display: flex;
+  align-items: center;
+}
+
+input[type="range"].input-range-volume{
+  margin-left: 10px;
+  width: 100px;
+}
+
+/* Helpers */
+.sr-only{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}

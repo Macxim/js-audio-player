@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MP3 Player</title>
+  </head>
+
+  <body>
+    <link href="styles.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <div class="player-wrapper">
+      <div class="player" id="player">
+        <div class="player__noise"></div>
+
+        <div class="player__container">
+          <div class="song-data" id="songdata">
+            <div class="song-data-container">
+              <div class="song-cover-wrap">
+                <div class="song-cover-fake-border"></div>
+                <img alt="" id="currentSongCover" class="song-cover" src="">
+              </div>
+
+              <div class="song-meta-wrap">
+                <h1 class="current-song-title" id="currentSong"></h1>
+                <h2 class="current-song-author" id="currentSongAuthor"></h2>
+
+                <div class="current-song-time">
+                  <span id="currentSongCurrentTime"></span> <span id="currentSongTotalTime"></span>
+                </div>
+              </div>
+
+              <ul id="songList" class="song-list"></ul>
+            </div>
+          </div>
+
+          <audio id="song"></audio>
+
+          <div class="button-bar button-bar--primary">
+
+            <button class="btn btn--more-controls" id="more-controls">
+              <span class="fa fa-cogs"></span>
+              <span class="sr-only">More options</span>
+            </button>
+
+            <button class="btn" id="backward-button">
+              <span class="fa fa-backward"></span>
+              <span class="sr-only">Backward</span>
+            </button>
+
+            <button class="btn" id="stepBackward-button">
+              <span class="fa fa-step-backward"></span>
+              <span class="sr-only">Step Backward</span>
+            </button>
+
+            <div class="button-fake">
+
+              <div class="play-btn-wrap">
+                <button class="btn btn--play" id="play-button">
+                  <span class="fa fa-play" id="play-button-icon"></span>
+                  <span class="sr-only">Play</span>
+                </button>
+
+                <button class="btn btn--play btn--pause" id="pause-button">
+                  <span class="fa fa-pause"></span>
+                  <span class="sr-only">Pause</span>
+                </button>
+              </div>
+
+            </div>
+
+            <button class="btn" id="stepForward-button">
+              <span class="fa fa-step-forward"></span>
+              <span class="sr-only">Step Forward</span>
+            </button>
+
+            <button class="btn" id="forward-button">
+              <span class="fa fa-forward"></span>
+              <span class="sr-only">Forward</span>
+            </button>
+
+            <button class="btn" id="stop-button">
+              <span class="fa fa-stop"></span>
+              <span class="sr-only">Stop</span>
+            </button>
+
+          </div>
+
+          <div class="button-bar button-bar--secondary">
+            <div class="btn input-range-wrapper">
+              <i class="fa fa-volume fa-volume-up"></i><input class="input-range-volume" type="range" id="volumeLevel" max="1" min="0" step="0.1"/>
+            </div>
+
+            <button class="btn btn--random-song" id="random-song">
+              <span class="fa fa-random"></span>
+              <span class="sr-only">Shuffle</span>
+            </button>
+
+            <button class="btn btn--repeat-song" id="repeat-song">
+              <span class="fa fa-repeat"></span>
+              <span class="sr-only">Repeat</span>
+            </button>
+
+            <div class="btn input-range-wrapper">
+              <i class="fa fa-music"></i><input class="input-range" value="0" type="range" id="songTimeRange" max="1" min="0" step="0.01"/>
+            </div>
+          </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+
+  </body>
+</html>
