@@ -164,24 +164,19 @@
     return false;
   }
 
-  document.getElementById("stop-button").addEventListener("click", () => {
-    stop();
-  });
 
-  document.getElementById("backward-button").addEventListener("click", () => {
-    backward();
-  });
+  const clickHandlers = {
+    "stop-button" : stop,
+    "backward-button" : backward,
+    "stepBackward-button" : stepBackward,
+    "forward-button" : forward,
+    "stepForward-button" : stepForward
+  }
 
-  document.getElementById("stepBackward-button").addEventListener("click", () => {
-    stepBackward();
-  });
-
-  document.getElementById("forward-button").addEventListener("click", () => {
-    forward();
-  });
-
-  document.getElementById("stepForward-button").addEventListener("click", () => {
-    stepForward();
+  Object.keys(clickHandlers).map(function(objectKey) {
+    document.getElementById(objectKey).addEventListener("click", () => {
+      clickHandlers[objectKey]();
+    });
   });
 
   document.getElementById("volumeLevel").addEventListener("change", (e) => {
