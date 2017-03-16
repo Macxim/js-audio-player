@@ -40,8 +40,8 @@
     ]
   ];
 
-  for (i in songs) {
-    songList.innerHTML += `<li class="song-list__item" data-index="${i[0]}">${cleanSongTitle(songs[i][0])}</li>`;
+  for (let [index, value] of songs.entries()) {
+    songList.innerHTML += `<li class="song-list__item" data-index="${index}">${cleanSongTitle(value[0])}</li>`;
   }
 
   function switchPlayPause() {
