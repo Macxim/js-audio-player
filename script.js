@@ -3,10 +3,7 @@
   const audio = document.getElementById("song");
   const song = document.getElementById("currentSong");
   const songCover = document.getElementById("currentSongCover");
-  const songList = document.getElementById("songList");
   const songTime = document.getElementById("currentSongTotalTime");
-  const playBtn = document.getElementById("play-button");
-  const pauseBtn = document.getElementById("pause-button");
   const songTimeRange = document.getElementById("songTimeRange");
   let randomSong = false;
   let repeatSong = false;
@@ -41,7 +38,7 @@
   ];
 
   for (let [index, value] of songs.entries()) {
-    songList.innerHTML += `<li class="song-list__item" data-index="${index}">${cleanSongTitle(value[0])}</li>`;
+    document.getElementById("song-list").innerHTML += `<li class="song-list__item" data-index="${index}">${cleanSongTitle(value[0])}</li>`;
   }
 
   function switchPlayPause() {
@@ -166,17 +163,63 @@
 
 
   const clickHandlers = {
+
     "stop-button" : stop,
+
     "backward-button" : backward,
+
     "stepBackward-button" : stepBackward,
+
     "forward-button" : forward,
-    "stepForward-button" : stepForward
+
+    "stepForward-button" : stepForward,
+
+    "more-controls" :  (e) => {
+      applyActiveClass(e.currentTarget);
+      document.getElementsByClassName("button-bar--secondary")[0].classList.toggle("is-visible");
+    },
+
+    "random-song" : (e) => {
+      applyActiveClass(e.currentTarget);
+      toggleRandom();
+    },
+
+    "repeat-song" : (e) => {
+      applyActiveClass(e.currentTarget);
+      toggleRepeat();
+    },
+
+    "song-list" : (e) => {
+      if (e.target && e.target.nodeName == "LI") {
+        playSong(e.target.dataset.index);
+      }
+    },
+
+    "play-button" : () => {
+      let triggerClick = 0;
+      play();
+
+      if (triggerClick == 0) { // first click
+        const hiddenButtons = document.querySelectorAll(".button-bar--primary > button");
+        for (let i = 0; i < hiddenButtons.length; i++) {
+          hiddenButtons[i].classList.add("is-shown");
+        }
+        setTimeout(() => {
+          document.getElementById("songdata").classList.add("is-visible");
+        }, 3000);
+      }
+      triggerClick++;
+    },
+
+    "pause-button" : () => {
+      pause();
+      switchPlayPause();
+    }
+
   }
 
-  Object.keys(clickHandlers).map(function(objectKey) {
-    document.getElementById(objectKey).addEventListener("click", () => {
-      clickHandlers[objectKey]();
-    });
+  Object.keys(clickHandlers).forEach(function(key) {
+    document.getElementById(key).addEventListener("click", clickHandlers[key]);
   });
 
   document.getElementById("volumeLevel").addEventListener("change", (e) => {
@@ -186,48 +229,6 @@
   document.getElementById("songTimeRange").addEventListener("change", (e) => {
     changeSongProgress(e.currentTarget.value);
   })
-
-  document.getElementById("more-controls").addEventListener("click", (e) => {
-    applyActiveClass(e.currentTarget);
-    document.getElementsByClassName("button-bar--secondary")[0].classList.toggle("is-visible");
-  });
-
-  document.getElementById("random-song").addEventListener("click", (e) => {
-    applyActiveClass(e.currentTarget);
-    toggleRandom();
-  });
-
-  document.getElementById("repeat-song").addEventListener("click", (e) => {
-    applyActiveClass(e.currentTarget);
-    toggleRepeat();
-  });
-
-  songList.addEventListener("click", e => {
-    if (e.target && e.target.nodeName == "LI") {
-      playSong(e.target.dataset.index);
-    }
-  });
-
-  playBtn.addEventListener("click", () => {
-    let triggerClick = 0;
-    play();
-
-    if (triggerClick == 0) { // first click
-      const hiddenButtons = document.querySelectorAll(".button-bar--primary > button");
-      for (let i = 0; i < hiddenButtons.length; i++) {
-        hiddenButtons[i].classList.add("is-shown");
-      }
-      setTimeout(() => {
-        document.getElementById("songdata").classList.add("is-visible");
-      }, 3000);
-    }
-    triggerClick++;
-  });
-
-  pauseBtn.addEventListener("click", () => {
-    pause();
-    switchPlayPause();
-  });
 
   audio.addEventListener("ended", () => {
     this.currentTime = 0;
