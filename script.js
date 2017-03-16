@@ -1,255 +1,254 @@
-var audio = document.getElementById("song");
-var song = document.getElementById("currentSong");
-var songCover = document.getElementById('currentSongCover');
-var songList = document.getElementById("songList");
-var songTime = document.getElementById("currentSongTotalTime");
-var playBtn = document.getElementById('play-button');
-var pauseBtn = document.getElementById('pause-button');
-var songTimeRange = document.getElementById("songTimeRange");
-var randomSong = false;
-var repeatSong = false;
-var currentSong = 0;
+(function (){
 
-var songs = [
-  [
-    "http://www.thesoundarchive.com/starwars/star-wars-theme-song.mp3",
-    "John Williams",
-    "http://storage.macx.im/codepen/starwars-theme.jpg"
-  ],
-  [
-    "http://www.thesoundarchive.com/starwars/imperial_march.mp3",
-    "Darth Vader",
-    "http://storage.macx.im/codepen/starwars-imperial-march.jpg"
-  ],
-  [
-    "http://www.thesoundarchive.com/starwars/star-wars-cantina-song.mp3",
-    "Figrin D'an and the Modal Nodes",
-    "http://storage.macx.im/codepen/starwars-cantina.jpg"
-  ],
-  [
-    "http://www.thesoundarchive.com/starwars/Star-Wars-Duel-of-the-Fates.mp3",
-    "Qui-Gon Jinn feat. Obi-Wan Kenobi",
-    "http://storage.macx.im/codepen/starwars-duel-fates.jpg"
-  ],
-  [
-    "http://www.thesoundarchive.com/starwars/rebel-theme.mp3",
-    "The Alliance Fleet",
-    "http://storage.macx.im/codepen/starwars-rebel.png"
-  ]
-];
+  const audio = document.getElementById("song");
+  const song = document.getElementById("currentSong");
+  const songCover = document.getElementById("currentSongCover");
+  const songList = document.getElementById("songList");
+  const songTime = document.getElementById("currentSongTotalTime");
+  const playBtn = document.getElementById("play-button");
+  const pauseBtn = document.getElementById("pause-button");
+  const songTimeRange = document.getElementById("songTimeRange");
+  let randomSong = false;
+  let repeatSong = false;
+  let currentSong = 0;
 
-for (i in songs) {
-  songList.innerHTML += '<li class="song-list__item" data-index="' + i[0] + '">' + cleanSongTitle(songs[i][0]) + '</li>';
-}
+  let songs = [
+    [
+      "http://www.thesoundarchive.com/starwars/star-wars-theme-song.mp3",
+      "John Williams",
+      "http://storage.macx.im/codepen/starwars-theme.jpg"
+    ],
+    [
+      "http://www.thesoundarchive.com/starwars/imperial_march.mp3",
+      "Darth Vader",
+      "http://storage.macx.im/codepen/starwars-imperial-march.jpg"
+    ],
+    [
+      "http://www.thesoundarchive.com/starwars/star-wars-cantina-song.mp3",
+      "Figrin D'an and the Modal Nodes",
+      "http://storage.macx.im/codepen/starwars-cantina.jpg"
+    ],
+    [
+      "http://www.thesoundarchive.com/starwars/Star-Wars-Duel-of-the-Fates.mp3",
+      "Qui-Gon Jinn feat. Obi-Wan Kenobi",
+      "http://storage.macx.im/codepen/starwars-duel-fates.jpg"
+    ],
+    [
+      "http://www.thesoundarchive.com/starwars/rebel-theme.mp3",
+      "The Alliance Fleet",
+      "http://storage.macx.im/codepen/starwars-rebel.png"
+    ]
+  ];
 
-
-songList.addEventListener('click', function(e){
-  if(e.target && e.target.nodeName == "LI") {
-    playSong(e.target.dataset.index);
+  for (i in songs) {
+    songList.innerHTML += `<li class="song-list__item" data-index="${i[0]}">${cleanSongTitle(songs[i][0])}</li>`;
   }
-});
 
-
-function switchPlayPause(){
-  document.getElementsByClassName('btn--play')[1].classList.toggle('is-visible');
-}
-
-function play() {
-  if ( (!audio.src && randomSong == true) || (audio.src && randomSong == true) ){
-    shuffleSongs();
+  function switchPlayPause() {
+    document.getElementsByClassName("btn--play")[1].classList.toggle("is-visible");
   }
-  else if (audio.src) {
+
+  function play() {
+    if ((!audio.src && randomSong == true) || (audio.src && randomSong == true)) {
+      shuffleSongs();
+    } else if (audio.src) {
+      audio.play();
+    } else {
+      audio.src = songs[currentSong][0];
+    }
     audio.play();
+
+    let songIndexinArr = findIndexInNestedArray(audio.src, songs);
+
+    song.textContent = cleanSongTitle(audio.src);
+    document.getElementById("currentSongAuthor").textContent = songs[songIndexinArr][1];
+    document.getElementById("currentSongCover").setAttribute("src", songs[songIndexinArr][2]);
+
+    convertDuration(song.duration);
+    switchPlayPause();
   }
-  else{
+
+  function playSong(s) {
+    currentSong = s;
     audio.src = songs[currentSong][0];
+    play();
   }
-  audio.play();
 
-  var songIndexinArr = findIndexInNestedArray(audio.src, songs);
-
-  song.textContent = cleanSongTitle(audio.src);
-  document.getElementById('currentSongAuthor').textContent = songs[songIndexinArr][1];
-  document.getElementById('currentSongCover').setAttribute('src', songs[songIndexinArr][2]);
-
-  convertDuration(song.duration);
-  switchPlayPause();
-}
-
-function playSong(s) {
-  currentSong = s;
-  audio.src = songs[currentSong][0];
-  play();
-}
-
-function pause() {
-  audio.pause();
-}
-
-function stop() {
-  audio.pause();
-  audio.currentTime = 0;
-}
-
-function forward() {
-  audio.currentTime += 10;
-}
-
-function backward() {
-  audio.currentTime -= 10;
-}
-
-function stepForward() {
-  currentSong++;
-  if (currentSong == songs.length) {
-    currentSong = 0;
+  function pause() {
+    audio.pause();
   }
-  audio.src = songs[currentSong][0];
-  play();
-}
 
-function stepBackward() {
-  --currentSong;
-  if (currentSong < 0) {
-    currentSong = songs.length - 1;
+  function stop() {
+    audio.pause();
+    audio.currentTime = 0;
   }
-  audio.src = songs[currentSong][0];
-  play();
-}
 
-function toggleRandom() {
-  randomSong = !randomSong;
-  return randomSong;
-}
-
-function toggleRepeat() {
-  audio.loop = !audio.loop;
-  return audio.loop;
-}
-
-function shuffleSongs() {
-  if (randomSong == true){
-    audio.src = songs[Math.floor(Math.random() * songs.length)][0];
+  function forward() {
+    audio.currentTime += 10;
   }
-}
 
-function cleanSongTitle(url) {
-  var title = decodeURIComponent(url);
-  var position = url.lastIndexOf('/');
-  title = title.substring(position + 1).replace(/.mp3/, "").replace(/\_|-/g, " ");
-  return title.split(' ').map(i => i[0].toUpperCase() + i.substr(1).toLowerCase()).join(' ');
-}
-
-function convertDuration(duration) {
-  var minutes = Math.floor(duration / 60);
-  var seconds = Math.floor(duration % 60);
-  if (seconds < 10) {
-    seconds = "0" + seconds;
+  function backward() {
+    audio.currentTime -= 10;
   }
-  return minutes + ":" + seconds;
-}
 
-function changeVolume(amount) {
-  audio.volume = amount;
-}
+  function stepForward() {
+    currentSong++;
+    if (currentSong == songs.length) {
+      currentSong = 0;
+    }
+    audio.src = songs[currentSong][0];
+    play();
+  }
 
-function changeSongProgress(value) {
-  audio.currentTime = value;
-}
+  function stepBackward() {
+    --currentSong;
+    if (currentSong < 0) {
+      currentSong = songs.length - 1;
+    }
+    audio.src = songs[currentSong][0];
+    play();
+  }
 
-function applyActiveClass(el){
-  el.classList.toggle('is-active');
-}
+  function toggleRandom() {
+    randomSong = !randomSong;
+    return randomSong;
+  }
 
-function findIndexInNestedArray(str, arr){
-  for(var i=0;i<arr.length;i++){
-    for(var j=0;j<arr[i].length;j++){
-      if(arr[i][j] === str){
-        var idx = [i][j]
-        return idx;
+  function toggleRepeat() {
+    audio.loop = !audio.loop;
+    return audio.loop;
+  }
+
+  function shuffleSongs() {
+    if (randomSong == true) {
+      audio.src = songs[Math.floor(Math.random() * songs.length)][0];
+    }
+  }
+
+  function cleanSongTitle(url) {
+    let title = decodeURIComponent(url);
+    let position = url.lastIndexOf("/");
+    title = title.substring(position + 1).replace(/.mp3/, "").replace(/\_|-/g, " ");
+    return title.split(" ").map(i => i[0].toUpperCase() + i.substr(1).toLowerCase()).join(" ");
+  }
+
+  function convertDuration(duration) {
+    let minutes = Math.floor(duration / 60);
+    let seconds = Math.floor(duration % 60);
+    if (seconds < 10) {
+      seconds = `0${seconds}`;
+    }
+    return `${minutes}:${seconds}`;
+  }
+
+  function changeVolume(amount) {
+    audio.volume = amount;
+  }
+
+  function changeSongProgress(value) {
+    audio.currentTime = value;
+  }
+
+  function applyActiveClass(el) {
+    el.classList.toggle("is-active");
+  }
+
+  function findIndexInNestedArray(str, arr) {
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length; j++) {
+        if (arr[i][j] === str) {
+          return [i][j];
+        }
       }
     }
+    return false;
   }
-  return false;
-}
 
-document.getElementById('stop-button').addEventListener('click', function(){
-  stop();
-});
+  document.getElementById("stop-button").addEventListener("click", () => {
+    stop();
+  });
 
-document.getElementById('backward-button').addEventListener('click', function(){
-  backward();
-});
+  document.getElementById("backward-button").addEventListener("click", () => {
+    backward();
+  });
 
-document.getElementById('stepBackward-button').addEventListener('click', function(){
-  stepBackward();
-});
+  document.getElementById("stepBackward-button").addEventListener("click", () => {
+    stepBackward();
+  });
 
-document.getElementById('forward-button').addEventListener('click', function(){
-  forward();
-});
+  document.getElementById("forward-button").addEventListener("click", () => {
+    forward();
+  });
 
-document.getElementById('stepForward-button').addEventListener('click', function(){
-  stepForward();
-});
+  document.getElementById("stepForward-button").addEventListener("click", () => {
+    stepForward();
+  });
 
-document.getElementById('volumeLevel').addEventListener('change', function(){
-  changeVolume(this.value);
-})
+  document.getElementById("volumeLevel").addEventListener("change", (e) => {
+    changeVolume(e.currentTarget.value);
+  })
 
-document.getElementById('songTimeRange').addEventListener('change', function(){
-  changeSongProgress(this.value);
-})
+  document.getElementById("songTimeRange").addEventListener("change", (e) => {
+    changeSongProgress(e.currentTarget.value);
+  })
 
-document.getElementById('more-controls').addEventListener('click', function(){
-  applyActiveClass(this);
-  document.getElementsByClassName('button-bar--secondary')[0].classList.toggle('is-visible');
-});
+  document.getElementById("more-controls").addEventListener("click", (e) => {
+    applyActiveClass(e.currentTarget);
+    document.getElementsByClassName("button-bar--secondary")[0].classList.toggle("is-visible");
+  });
 
-document.getElementById('random-song').addEventListener('click', function(){
-  applyActiveClass(this);
-  toggleRandom();
-});
+  document.getElementById("random-song").addEventListener("click", (e) => {
+    applyActiveClass(e.currentTarget);
+    toggleRandom();
+  });
 
-document.getElementById('repeat-song').addEventListener('click', function(){
-  applyActiveClass(this);
-  toggleRepeat();
-});
+  document.getElementById("repeat-song").addEventListener("click", (e) => {
+    applyActiveClass(e.currentTarget);
+    toggleRepeat();
+  });
 
-playBtn.addEventListener('click', function(){
-  var triggerClick = 0;
-  play();
-
-  if(triggerClick == 0){ // first click
-    var hiddenButtons = document.querySelectorAll('.button-bar--primary > button');
-    for (var i=0; i<hiddenButtons.length; i++){
-      hiddenButtons[i].classList.add('is-shown');
+  songList.addEventListener("click", e => {
+    if (e.target && e.target.nodeName == "LI") {
+      playSong(e.target.dataset.index);
     }
-    setTimeout(function(){
-      document.getElementById('songdata').classList.add('is-visible');
-    }, 3000);
-  }
-  triggerClick++;
-});
+  });
 
-pauseBtn.addEventListener('click', function(){
-  pause();
-  switchPlayPause();
-});
+  playBtn.addEventListener("click", () => {
+    let triggerClick = 0;
+    play();
 
-audio.addEventListener("ended", function() {
-  this.currentTime = 0;
-  stepForward();
-});
+    if (triggerClick == 0) { // first click
+      const hiddenButtons = document.querySelectorAll(".button-bar--primary > button");
+      for (let i = 0; i < hiddenButtons.length; i++) {
+        hiddenButtons[i].classList.add("is-shown");
+      }
+      setTimeout(() => {
+        document.getElementById("songdata").classList.add("is-visible");
+      }, 3000);
+    }
+    triggerClick++;
+  });
 
-audio.addEventListener("timeupdate", function() {
-  document.getElementById("currentSongCurrentTime").innerHTML = convertDuration(audio.currentTime) + " / ";
+  pauseBtn.addEventListener("click", () => {
+    pause();
+    switchPlayPause();
+  });
 
-  songTimeRange.min = audio.startTime;
-  songTimeRange.max = audio.duration;
-  songTimeRange.value = audio.currentTime;
-});
+  audio.addEventListener("ended", () => {
+    this.currentTime = 0;
+    stepForward();
+  });
 
-audio.addEventListener("loadedmetadata", function() {
-  songTime.innerHTML = convertDuration(audio.duration);
-});
+  audio.addEventListener("timeupdate", () => {
+    document.getElementById("currentSongCurrentTime").innerHTML = convertDuration(audio.currentTime) + " / ";
+
+    songTimeRange.min = audio.startTime;
+    songTimeRange.max = audio.duration;
+    songTimeRange.value = audio.currentTime;
+  });
+
+  audio.addEventListener("loadedmetadata", () => {
+    songTime.innerHTML = convertDuration(audio.duration);
+  });
+
+})();
