@@ -1,0 +1,30 @@
+{
+  "name": "audio-js-player",
+  "version": "1.0.0",
+  "description": "Audio player with HTML5 <audio> element controlled by JavaScript",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -b master"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Macxim/audio-js-player.git"
+  },
+  "keywords": [
+    "audio",
+    "player",
+    "javascript",
+    "starwars",
+    "html5audio"
+  ],
+  "author": "@Macxim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Macxim/audio-js-player/issues"
+  },
+  "homepage": "https://github.com/Macxim/audio-js-player#readme",
+  "devDependencies": {
+    "gh-pages": "^0.12.0"
+  }
+}
